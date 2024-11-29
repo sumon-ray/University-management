@@ -1,28 +1,42 @@
 import { model, Schema } from "mongoose";
-import { IUser } from "./user.interface";
+import { TUser } from "./user.interface";
 
-const userSchema = new Schema<IUser>({
-    name: {
+const userSchema = new Schema<TUser>({
+    id: {
         type: String,
-        required: [true, "please name is required"],
-        minLenght: 3,
-        maxLength: 5,
+        required: true,
     },
-    age:{type: Number, required: [true, 'age is required']},
-    email: {type: String, unique:true, required:[true, "please provide valid email"],
-    validate:{
-        validator:function(value: string){
-           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        },
-        message: "{VALUE} is not valid",
-        },
-        // immutable: true
+    password: {
+        type: String,
+        required: true,
+    },
+ needsPasswordChange: {
+    type: Boolean,
+    default: true,
+ },
+    role: {
+        type: String,
+        enum: ['student', 'faculty'], 
+        required: true,
+    },
+    status:{
+        type: String,
+        enum: ['in-progress', 'blocked']
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+
 },
+{
+    timestamps: true,
+}
+);
 
-    photo: String,
-    role: {type: String,enum:{values:["admin", "user"], message: "{VALUE} please enter a valid role"}, required: true, default: "user"},
-    userStatus: {type: String, enum: ["active", "inactive"], required: true}
-})
 
-const User = model<IUser>('User', userSchema)
-export default User
+
+export const User = model<TUser>('User', userSchema)
+
+
+

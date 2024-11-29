@@ -50,7 +50,8 @@ const studentSchema = new Schema<Student>({
   permanentAddress: { type: String, required: true },
   guardian: guardianSchema,
   localGuardian: localGuardianSchema,
-  profileImage: { type: String, required: true },
+  profileImage: { type: String, required: true, default: "https://example.com/default-profile.jpg" },
+
   isActive: ["active", "inactive"],
 });
 

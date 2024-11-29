@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.post('/create-student', studentController.createStudent)
 
-router.get('/getAllStudentsData', studentController.getAllStudent)
+router.get('/getAllStudent', studentController.getAllStudent)
 
 router.get('/:studentId', studentController.getSingleStudent)
 
