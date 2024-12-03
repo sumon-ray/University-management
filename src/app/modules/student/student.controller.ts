@@ -1,56 +1,63 @@
 import { Request, Response } from "express";
-import { studentService } from "./student.service";
-
+import { StudentServices } from "./student.service";
+import { studentValidationSchema } from "./student.validation";
+import { Student } from "./student.interface";
 const createStudent = async (req: Request, res: Response) => {
   try {
-    const {student:studentData} = req.body;
-    const result = await studentService.createStudentDB(studentData);
+    const { student: studentData } = req.body;
 
-    // send response
+    const zodParseData = studentValidationSchema.parse(studentData);
+
+    const result = await StudentServices.createStudentIntoDB(
+      zodParseData as Student,
+    );
+
     res.status(200).json({
       success: true,
-      message: "student is created successfully",
+      message: "Student is created succesfully",
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "something went wrong",
+      error: err,
+    });
   }
 };
 
+const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const result = await StudentServices.getAllStudentsFromDB();
 
+    res.status(200).json({
+      success: true,
+      message: "Students are retrieved succesfully",
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-const getAllStudent = async(req:Request, res:Response)=>{
-    try {
-        const result = await studentService.getAllStudentsFromDB()
-        res.status(200).json({
-            success: true,
-            message: "students data retrieved successfully",
-            data: result
-        })
-    } catch (error) {
-        console.log(error)
-    }
-}
+const getSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
 
+    const result = await StudentServices.getSingleStudentFromDB(studentId);
 
-const getSingleStudent = async (req:Request, res:Response)=>{
-    try {
-        // const studentID = req.params.studentId {1st method}
-        const {studentId} = req.params; // {second method}
-        const result = await studentService.singleStudentFromDB(studentId)
-        res.status(200).json({
-            success: true,
-            message: 'student id has been retrieved successfully',
-            data: result
+    res.status(200).json({
+      success: true,
+      message: "Student is retrieved succesfully",
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-        })
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-export const studentController = {
+export const StudentControllers = {
   createStudent,
-  getAllStudent,
-  getSingleStudent
+  getAllStudents,
+  getSingleStudent,
 };
