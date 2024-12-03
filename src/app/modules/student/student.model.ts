@@ -1,12 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 // import { Guardian, LocalGuardian, Student, StudentMethods, StudentModel2, UserName } from './student.interface';// studentMethod
-import {
-  Guardian,
-  LocalGuardian,
-  Student,
-  StudentModel2,
-  UserName,
-} from "./student.interface";
+import { Guardian, LocalGuardian, Student, StudentModel2, UserName } from './student.interface';
+import bcrypt from 'bcrypt'
+import config from '../../config';
 // import {
 //   Guardian,
 //   LocalGuardian,
@@ -74,31 +70,43 @@ const localGuradianSchema = new Schema<LocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<Student, StudentModel2>({
+const studentSchema = new Schema<Student,StudentModel2>({
   id: { type: String },
+  password:{
+  type: String,
+  required: [true, 'password is required'], 
+  unique: true,
+  maxlength: [20, "password can not be more than 20 characters"]
+},
+
   name: userNameSchema,
-  gender: ["male", "female"],
+  gender: ['male', 'female'],
   dateOfBirth: { type: String },
   email: { type: String, required: true },
   contactNo: { type: String, required: true },
   emergencyContactNo: { type: String, required: true },
-  bloogGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  bloogGroup: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
   presentAddress: { type: String, required: true },
   permanentAddres: { type: String, required: true },
   guardian: guardianSchema,
   localGuardian: localGuradianSchema,
   profileImg: { type: String },
-  isActive: ["active", "blocked"],
-});
+  isActive: ['active', 'blocked'],
+});                
 //  pre save middleware //
+   
+studentSchema.pre('save',async function(next){
+ // hasing password into db
+ const user = this
+ user.password = await bcrypt.hash(user.password,Number(config.bcrypt_salt_rounds))
+  // console.log(this, "pre hook=> we will save data ");
+  next()
+});
 
-// studentSchema.pre('save', function(){
-//   console.log(this, "pre hook=> we will save data ");
-// });
+studentSchema.post('save', function(){
 
-// studentSchema.post('save', function(){
-//   console.log(this, "post hook=> we will save data");
-// })
+  console.log(this, "post hook=> we will save data");
+})
 
 // creating a custom instance method
 //**********************************************************
@@ -111,13 +119,11 @@ const studentSchema = new Schema<Student, StudentModel2>({
 
 // Creating a custom static method
 //**********************************************************
-studentSchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await StudentModel.findOne({ id });
-  return existingUser;
-};
+studentSchema.statics.isUserExists = async function(id:string){
+  const existingUser = await StudentModel.findOne({id})
+  return existingUser
+}
 //**********************************************************
 
-export const StudentModel = model<Student, StudentModel2>(
-  "Student",
-  studentSchema,
-);
+  
+export const StudentModel = model<Student, StudentModel2>('Student', studentSchema);   
