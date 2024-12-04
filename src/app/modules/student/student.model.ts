@@ -108,7 +108,13 @@ const studentSchema = new Schema<Student, StudentModel2>({
     type: Boolean,
     default: false,
   },
-});
+},
+{
+  toJSON:{
+    virtuals: true
+  }
+}
+);
 //  pre save middleware //
 
 studentSchema.pre("save", async function (next) {
@@ -142,6 +148,11 @@ studentSchema.pre("findOne", async function (next) {
 studentSchema.pre('aggregate', async function(next){
   this.pipeline().unshift({$match: {isDeleted: {$ne:true}}})
   next()
+})
+// vertual
+
+studentSchema.virtual('fullName').get(function(){
+  return `${this.name.firstName}  ${this.name.middleName} ${this.name.lastName}`
 })
 // creating a custom instance method
 //**********************************************************
