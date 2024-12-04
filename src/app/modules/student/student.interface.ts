@@ -38,6 +38,7 @@ export type Student = {
   localGuardian: LocalGuardian;
   profileImg?: string;
   isActive: "active" | "blocked";
+  isDeleted: boolean
 };
 
 // for creating instance

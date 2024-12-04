@@ -43,6 +43,7 @@ const studentValidationSchema = z.object({
   localGuardian: localGuardianValidationSchema,
   profileImg: z.string().optional(),
   isActive: z.enum(["active", "blocked"]),
+  isDeleted: z.boolean()
 });
 
 // Export the schema
