@@ -145,5 +145,6 @@ studentSchema.statics.isUserExists = async function (id: string) {
 
 export const StudentModel = model<Student, StudentModel2>(
   "Student",
+  
   studentSchema
 );
