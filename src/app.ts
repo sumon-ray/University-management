@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { UserRoutes } from "./app/modules/user/user.route";
 import { StudentRoutes } from "./app/modules/student/student.route";
+import globalErrorHandler from "./app/middlwares/globalErrorhandler";
 // import userRouter from "./app/modules/user-demo/user.router";
 // import { studentRoute } from "./app/modules/student/student.route";
 
@@ -20,6 +21,8 @@ const getAController = (req: Request, res: Response) => {
   res.send("hello world");
 };
 app.get("/", getAController);
+
+app.use(globalErrorHandler)
 
 // app.use(globalErrorHandler)
 export default app;
