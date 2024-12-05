@@ -31,7 +31,6 @@ const globalErrorHandler =  (err:any, req: Request, res:Response, next: NextFunc
      error: err
   })
  
-  next()
 }
 
 
