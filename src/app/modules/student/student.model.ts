@@ -7,14 +7,7 @@ import {
   StudentModel2,
   UserName,
 } from "./student.interface";
-import bcrypt from "bcrypt";
-import config from "../../config";
-// import {
-//   Guardian,
-//   LocalGuardian,
-//   Student,
-//   UserName,
-// } from './student/student.interface';
+
 
 const userNameSchema = new Schema<UserName>({
   firstName: {
@@ -78,10 +71,11 @@ const localGuradianSchema = new Schema<LocalGuardian>({
 
 const studentSchema = new Schema<Student, StudentModel2>({
   id: { type: String },
-  password: {
-    type: String,
-    required: [true, "password is required"],
-    maxlength: [20, "password can not be more than 20 characters"],
+  user: {
+    type: Schema.Types.ObjectId,
+    required: [true, 'user id is required'],
+    unique: true,
+    ref: 'User'
   },
 
   name: userNameSchema,
@@ -96,14 +90,7 @@ const studentSchema = new Schema<Student, StudentModel2>({
   guardian: guardianSchema,
   localGuardian: localGuradianSchema,
   profileImg: { type: String },
-  isActive: {
-    type: String,
-    enum: {
-      values: ["active", "blocked"],
-      message: "{VALUE} is not a valid status",
-    },
-    default: "active",
-  },
+
   isDeleted: {
     type: Boolean,
     default: false,
@@ -115,22 +102,7 @@ const studentSchema = new Schema<Student, StudentModel2>({
   }
 }
 );
-//  pre save middleware //
 
-studentSchema.pre("save", async function (next) {
-  // hasing password into db
-  const user = this; // refer the current data
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds)
-  );
-  next();
-});
-
-studentSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
-});
 
 // Quary middleware
 
@@ -145,10 +117,10 @@ studentSchema.pre("findOne", async function (next) {
   next()
 });
 
-studentSchema.pre('aggregate', async function(next){
-  this.pipeline().unshift({$match: {isDeleted: {$ne:true}}})
-  next()
-})
+// studentSchema.pre('aggregate', async function(next){
+//   this.pipeline().unshift({$match: {isDeleted: {$ne:true}}})
+//   next()
+// })
 // vertual
 
 studentSchema.virtual('fullName').get(function(){

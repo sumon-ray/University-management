@@ -13,8 +13,8 @@ app.use(cors());
 
 // student
 // app.use('/api/student', studentRoute)
-app.use("/api/users", UserRoutes);
 app.use("/api/student", StudentRoutes);
+app.use("/api/users", UserRoutes);
 
 const getAController = (req: Request, res: Response) => {
   res.send("hello world");
