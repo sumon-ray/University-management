@@ -14,6 +14,12 @@ const createStudentIntoDB = async (password: string, studentData: Student) => {
   // set student roll
   userData.role = 'student'
 
+
+// year, semesterCode, 
+const generateStudentId = 
+
+
+
   // set menuall id
   userData.id = '103010001'
   // create a user 

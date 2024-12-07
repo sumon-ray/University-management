@@ -38,7 +38,8 @@ export type Student = {
   guardian: Guardian;
   localGuardian: LocalGuardian;
   profileImg?: string;
-  isDeleted: boolean
+  isDeleted: boolean;
+  admissionSemester:Types.ObjectId;
 };
 
 // for creating instance
