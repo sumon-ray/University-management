@@ -39,7 +39,7 @@ required: true
 
 
 academicSemesterSchema.pre('save', async function(next) {
-    const isSemesterExist = await AcademicSemester.find({
+    const isSemesterExist = await AcademicSemester.findOne({
         year: this.year ,
         name: this.name, 
     })
