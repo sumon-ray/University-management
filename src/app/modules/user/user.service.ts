@@ -22,6 +22,8 @@ const admissionSemester = await AcademicSemester.findById(payload.admissionSemes
 if (!admissionSemester) {
   throw new Error ('Academic Semester not Found ')
 }
+
+
   // set menuall id
   userData.id =await generateStudentId(admissionSemester )
   // create a user 
