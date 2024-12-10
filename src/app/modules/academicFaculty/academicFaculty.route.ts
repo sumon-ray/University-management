@@ -9,5 +9,4 @@ router.post('/create-academic-faculty', validateRequest(academicFacultyValidatio
 router.get('/', academicFacultyController.getAllAcademicFacultyFromDB)
 router.get('/:facultyId', academicFacultyController.getSingleAcademicFacultyFromDB)
 router.patch('/:facultyId', validateRequest(academicFacultyValidation.updateAcademicFacultyValidationSchema),academicFacultyController.updateAcademicFacultyIntoDB)
-
 export const AcademicFacultyRoutes =  router 
