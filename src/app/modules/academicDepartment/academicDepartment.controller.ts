@@ -18,7 +18,7 @@ const getAllAcademicDepartmentIntoDB = catchAsync(async(req,res)=>{
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true, 
-        message: "academic departments are successfully",
+        message: "academic departments are recieved successfully",
         data: result
     })
 })
@@ -28,7 +28,7 @@ const getSingleAcademicDepartmentIntoDB = catchAsync(async(req,res)=>{
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true, 
-        message: "academic department is successfully",
+        message: "academic department is recieved successfully",
         data: result
     })
 })

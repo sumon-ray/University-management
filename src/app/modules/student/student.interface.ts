@@ -40,6 +40,7 @@ export type Student = {
   profileImg?: string;
   isDeleted: boolean;
   admissionSemester:Types.ObjectId;
+  academicDepartment: Types.ObjectId
 };
 
 // for creating instance
