@@ -41,6 +41,20 @@ const getSingleStudent = catchAsync(
     });
   }
 );
+const updateStudent = catchAsync(
+  async (req: Request, res: Response) => {
+    const { studentId } = req.params;
+
+    const result = await StudentServices.getSingleStudentFromDB(studentId, req.body);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Student is retrieved succesfully",
+      data: result,
+    });
+  }
+);
 
 const deleteStudentFromDB = catchAsync(
   async (req: Request, res: Response) => {

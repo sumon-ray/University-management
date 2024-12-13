@@ -38,7 +38,7 @@ const getAllStudentsFromDB = async () => {
 
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await StudentModel.findOne({ id });
-  const result = await StudentModel.findById(id)
+  const result = await StudentModel.findOne({id})
   .populate('admissionSemester')
   .populate({
     path: 'academicDepartment',
@@ -49,6 +49,17 @@ const getSingleStudentFromDB = async (id: string) => {
 
   return result;
 };
+const updateStudentIntoDB = async (id: string, ) => {
+  // const result = await StudentModel.findOne({ id });
+  const result = await StudentModel.findOne({id})
+ 
+
+  return result;
+};
+
+
+
+
 const deleteStudentFromDB = async (id: string) => {
 
   const session =await mongoose.startSession()
@@ -93,3 +104,8 @@ export const StudentServices = {
   getSingleStudentFromDB,
   deleteStudentFromDB
 };
+
+
+
+
+// findOne will use when we will not use mongodb _id
