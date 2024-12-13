@@ -49,14 +49,14 @@ export const createStudentValidationSchema = z.object({
   })
 })   
   
-// UserName validation
+//update UserName validation
 const updateUserNameValidationSchema = z.object({
   firstName: z.string().min(1, "First name is required").optional(),
   middleName: z.string().optional(),
   lastName: z.string().min(1, "Last name is required").optional(),
 });
 
-// Guardian validation
+//update Guardian validation
 const updateGuardianValidationSchema = z.object({
   fatherName: z.string().min(1, "Father's name is required").optional(),
   fatherOccupation: z.string().min(1, "Father's occupation is required").optional(),
@@ -66,7 +66,7 @@ const updateGuardianValidationSchema = z.object({
   motherContactNo: z.string().min(1, "Mother's contact number is required").optional(),
 });
 
-// LocalGuardian validation
+// update LocalGuardian validation
 const updateLocalGuardianValidationSchema = z.object({
   name: z.string().min(1, "Local guardian's name is required").optional(),
   occupation: z.string().min(1, "Local guardian's occupation is required").optional(),
@@ -74,10 +74,10 @@ const updateLocalGuardianValidationSchema = z.object({
   address: z.string().min(1, "Local guardian's address is required").optional(),
 });
 
-// Main Student schema
+//update Main Student schema
 export const UpdateStudentValidationSchema = z.object({
   body: z.object({
-    password:z.string().max(20).optional(),
+    // password:z.string().max(20).optional(),
   
     student: z.object({
       name: updateUserNameValidationSchema,

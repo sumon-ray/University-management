@@ -58,6 +58,7 @@ const createStudentIntoDB = async (password: string, payload: Student) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
+    throw new Error ('Failed to create student')
   }
 };
 
