@@ -5,6 +5,7 @@ import AppError from "../../errors/AppError";
 import { User } from "../user/user.model";
 import httpStatus from "http-status";
 import { Student } from "./student.interface";
+// import { string } from "zod";
 // const createStudentIntoDB = async (studentData: Student) => {
 //   // const result = await StudentModel.create(student);// build in static method
 //   //**********************************************************
@@ -25,8 +26,27 @@ import { Student } from "./student.interface";
 //   return result;
 // };
 
-const getAllStudentsFromDB = async () => {
-  const result = await StudentModel.find()
+const getAllStudentsFromDB = async (query: Record<string, unknown> ) => {
+console.log(query)
+
+const queryObj = {...query}
+  let searchTerm = ''
+let studentSearchableFields = ['email', 'name.firstName', 'presentAddress']
+  if (query?.searchTerm) {
+  searchTerm = query?.searchTerm  as string  
+  }
+
+const searchQuery = StudentModel.find({
+  $or: studentSearchableFields.map((field)=>({
+    [field]: {$regex : searchTerm, $options: 'i'}
+  }))
+})
+
+// filtering 
+const excludeFields = ['searchTerm', 'sort', 'limit']
+excludeFields.forEach(el=> delete queryObj[el])
+// console.log({query, queryObj})
+  const filterQuery =  searchQuery.find(queryObj)
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -34,7 +54,21 @@ const getAllStudentsFromDB = async () => {
         path: "academicFaculty",
       },
     });
-  return result;
+
+
+    let sort = '-createdAt' 
+    if (queryObj.sort) {
+    sort =  query.sort as string
+    }
+
+const sortQuery = filterQuery.sort(sort)
+
+let limit = 1; 
+if (query.limit) {
+  limit = query.limit
+}
+const limitQuery = await sortQuery.limit(limit)
+  return limitQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
