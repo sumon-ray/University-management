@@ -27,7 +27,6 @@ import { Student } from "./student.interface";
 // };
 
 const getAllStudentsFromDB = async (query: Record<string, unknown> ) => {
-console.log(query)
 
 const queryObj = {...query}
   let searchTerm = ''
@@ -43,32 +42,78 @@ const searchQuery = StudentModel.find({
 })
 
 // filtering 
-const excludeFields = ['searchTerm', 'sort', 'limit']
-excludeFields.forEach(el=> delete queryObj[el])
-// console.log({query, queryObj})
-  const filterQuery =  searchQuery.find(queryObj)
-    .populate("admissionSemester")
-    .populate({
-      path: "academicDepartment",
-      populate: {
-        path: "academicFaculty",
-      },
-    });
+ // FILTERING fUNCTIONALITY:
+  
+ const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+ excludeFields.forEach((el) => delete queryObj[el]);  // DELETING THE FIELDS SO THAT IT CAN'T MATCH OR FILTER EXACTLY
+
+const filterQuery = searchQuery
+  .find(queryObj)
+  .populate('admissionSemester')
+  .populate({
+    path: 'academicDepartment',
+    populate: {
+      path: 'academicFaculty',
+    },
+  });
 
 
-    let sort = '-createdAt' 
-    if (queryObj.sort) {
-    sort =  query.sort as string
-    }
+// SORTING FUNCTIONALITY:
 
-const sortQuery = filterQuery.sort(sort)
+let sort = '-createdAt'; // SET DEFAULT VALUE 
 
-let limit = 1; 
-if (query.limit) {
-  limit = query.limit
+// IF sort  IS GIVEN SET IT
+
+ if (query.sort) {
+  sort = query.sort as string;
 }
-const limitQuery = await sortQuery.limit(limit)
-  return limitQuery;
+
+ const sortQuery = filterQuery.sort(sort);
+
+
+ // PAGINATION FUNCTIONALITY:
+
+ let page = 1; // SET DEFAULT VALUE FOR PAGE 
+ let limit = 1; // SET DEFAULT VALUE FOR LIMIT 
+ let skip = 0; // SET DEFAULT VALUE FOR SKIP
+
+
+// IF limit IS GIVEN SET IT
+
+if (query.limit) {
+  limit = Number(query.limit);
+}
+
+// IF page IS GIVEN SET IT
+
+if (query.page) {
+  page = Number(query.page);
+  skip = (page - 1) * limit;
+}
+
+const paginateQuery = sortQuery.skip(skip);
+
+const limitQuery = paginateQuery.limit(limit);
+
+
+
+// FIELDS LIMITING FUNCTIONALITY:
+
+// HOW OUR FORMAT SHOULD BE FOR PARTIAL MATCH 
+
+fields: 'name,email'; // WE ARE ACCEPTING FROM REQUEST
+fields: 'name email'; // HOW IT SHOULD BE 
+
+let fields = '-__v'; // SET DEFAULT VALUE
+
+if (query.fields) {
+  fields = (query.fields as string).split(',').join(' ');
+
+}
+
+const fieldQuery = await limitQuery.select(fields);
+
+return fieldQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
