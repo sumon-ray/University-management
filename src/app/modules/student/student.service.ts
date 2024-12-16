@@ -5,6 +5,8 @@ import AppError from "../../errors/AppError";
 import { User } from "../user/user.model";
 import httpStatus from "http-status";
 import { Student } from "./student.interface";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { studentSearchableFields } from "./student.constant";
 // import { string } from "zod";
 // const createStudentIntoDB = async (studentData: Student) => {
 //   // const result = await StudentModel.create(student);// build in static method
@@ -27,94 +29,24 @@ import { Student } from "./student.interface";
 // };
 
 const getAllStudentsFromDB = async (query: Record<string, unknown> ) => {
-
-const queryObj = {...query}
-  let searchTerm = ''
-let studentSearchableFields = ['email', 'name.firstName', 'presentAddress']
-  if (query?.searchTerm) {
-  searchTerm = query?.searchTerm  as string  
-  }
-
-const searchQuery = StudentModel.find({
-  $or: studentSearchableFields.map((field)=>({
-    [field]: {$regex : searchTerm, $options: 'i'}
-  }))
-})
-
-// filtering 
- // FILTERING fUNCTIONALITY:
-  
- const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
- excludeFields.forEach((el) => delete queryObj[el]);  // DELETING THE FIELDS SO THAT IT CAN'T MATCH OR FILTER EXACTLY
-
-const filterQuery = searchQuery
-  .find(queryObj)
-  .populate('admissionSemester')
-  .populate({
-    path: 'academicDepartment',
-    populate: {
-      path: 'academicFaculty',
-    },
-  });
+   const studentQuery = new QueryBuilder(
+    StudentModel.find().populate(''),query
+   )
+   .search(studentSearchableFields)
+   .filter()
+   .sort()
+   .paginate()
+   .fields()
 
 
-// SORTING FUNCTIONALITY:
-
-let sort = '-createdAt'; // SET DEFAULT VALUE 
-
-// IF sort  IS GIVEN SET IT
-
- if (query.sort) {
-  sort = query.sort as string;
-}
-
- const sortQuery = filterQuery.sort(sort);
-
-
- // PAGINATION FUNCTIONALITY:
-
- let page = 1; // SET DEFAULT VALUE FOR PAGE 
- let limit = 1; // SET DEFAULT VALUE FOR LIMIT 
- let skip = 0; // SET DEFAULT VALUE FOR SKIP
-
-
-// IF limit IS GIVEN SET IT
-
-if (query.limit) {
-  limit = Number(query.limit);
-}
-
-// IF page IS GIVEN SET IT
-
-if (query.page) {
-  page = Number(query.page);
-  skip = (page - 1) * limit;
-}
-
-const paginateQuery = sortQuery.skip(skip);
-
-const limitQuery = paginateQuery.limit(limit);
-
-
-
-// FIELDS LIMITING FUNCTIONALITY:
-
-// HOW OUR FORMAT SHOULD BE FOR PARTIAL MATCH 
-
-fields: 'name,email'; // WE ARE ACCEPTING FROM REQUEST
-fields: 'name email'; // HOW IT SHOULD BE 
-
-let fields = '-__v'; // SET DEFAULT VALUE
-
-if (query.fields) {
-  fields = (query.fields as string).split(',').join(' ');
-
-}
-
-const fieldQuery = await limitQuery.select(fields);
-
-return fieldQuery;
+   const result = await studentQuery.modelQuery
+   return result
 };
+
+
+
+
+
 
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await StudentModel.findOne({ id });
@@ -129,6 +61,9 @@ const getSingleStudentFromDB = async (id: string) => {
 
   return result;
 };
+
+
+
 const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
 
 const {name, guardian, localGuardian, ...remainingStudentData} = payload 
