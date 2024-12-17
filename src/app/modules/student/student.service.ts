@@ -30,7 +30,7 @@ import { studentSearchableFields } from "./student.constant";
 
 const getAllStudentsFromDB = async (query: Record<string, unknown> ) => {
    const studentQuery = new QueryBuilder(
-    StudentModel.find().populate(''),query
+    StudentModel.find().populate('academicSemeter'),query
    )
    .search(studentSearchableFields)
    .filter()
@@ -50,7 +50,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown> ) => {
 
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await StudentModel.findOne({ id });
-  const result = await StudentModel.findOne({ id })
+  const result = await StudentModel.findById({ id })
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -61,7 +61,6 @@ const getSingleStudentFromDB = async (id: string) => {
 
   return result;
 };
-
 
 
 const updateStudentIntoDB = async (id: string, payload: Partial<Student>) => {
@@ -91,8 +90,7 @@ if(localGuardian && Object.keys(localGuardian).length){
 }
 
 
-
-  const result = await StudentModel.findOneAndUpdate({ id }, modifiedUpdatedData, {
+  const result = await StudentModel.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true, runValidators: true
   });
 
@@ -105,7 +103,7 @@ const deleteStudentFromDB = async (id: string) => {
   try {
     session.startTransaction();
 
-    const deleteStudent = await StudentModel.findOneAndUpdate(
+    const deleteStudent = await StudentModel.findByIdAndUpdate(
       { id },
       { isDeleted: true },
       { new: true, session }
@@ -114,8 +112,10 @@ const deleteStudentFromDB = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete data ");
     }
 
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const userId = deleteStudent.user
+
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session }
     );
