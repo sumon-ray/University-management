@@ -42,6 +42,7 @@ const getSingleStudent = catchAsync(
     });
   }
 );
+
 const updateStudentIntoDB = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
