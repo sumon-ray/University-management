@@ -22,6 +22,7 @@ const getAllCoursesFromDB = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 const getSingleCourseFromDB = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await CourseService.getSingleCourseFromDB(id);
